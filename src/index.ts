@@ -1,14 +1,17 @@
+import "dotenv/config";
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { type Env } from "./types/env.js";
 import { loggerMiddleware } from "./middleware/loggerMiddleware.js";
 import chirpRouter from "./routes/chirpRouter.js";
 import commentRouter from "./routes/commentRouter.js";
+import { dbMiddleware } from "./middleware/dbMiddleware.js";
 
 const app = new Hono<Env>();
 
 // register middleware
 app.use("*", loggerMiddleware);
+app.use("*", dbMiddleware);
 
 // register routes
 app.route("/chirps", chirpRouter);
