@@ -15,6 +15,9 @@ node_modules/
 .env
 .env.production
 
+# docker
+docker-compose-yml
+
 # logs
 logs/
 *.log
