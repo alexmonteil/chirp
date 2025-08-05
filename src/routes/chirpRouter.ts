@@ -4,20 +4,17 @@ import { zValidator } from "@hono/zod-validator";
 import { idSchema } from "../validation/id.js";
 import { chirpSchema } from "../validation/chirp.js";
 import { paginationSchema } from "../validation/pagination.js";
-import { gt } from "drizzle-orm";
+import { gt, eq } from "drizzle-orm";
 import { chirps } from "../db/schema.js";
 
-// instantiate router
 const chirpRouter = new Hono<Env>();
 
-// define routes
-chirpRouter.get("/", zValidator("query", paginationSchema), async (c) => {
-  // validate query parameters for pagination
-  const { cursor, limit } = c.req.valid("query");
-  // fetch db
-  const db = c.get("db");
+// ROUTES
 
-  // build query dynamically
+// GET /chirps
+chirpRouter.get("/", zValidator("query", paginationSchema), async (c) => {
+  const { cursor, limit } = c.req.valid("query");
+  const db = c.get("db");
   const whereCondition = cursor ? gt(chirps.id, cursor) : undefined;
   const query = db
     .select()
@@ -40,17 +37,38 @@ chirpRouter.get("/", zValidator("query", paginationSchema), async (c) => {
   });
 });
 
+// GET /chirps/:id
 chirpRouter.get("/:id", zValidator("param", idSchema), async (c) => {
   const { id } = c.req.valid("param");
-
-  return c.json({
-    message: `Fetched chirp with id: ${id}`,
+  const db = c.get("db");
+  const chirp = await db.query.chirps.findFirst({
+    where: eq(chirps.id, id),
   });
+
+  if (!chirp) {
+    return c.json({ message: "Chirp not found" }, 404);
+  }
+
+  return c.json(chirp);
 });
 
+// POST /chirps
 chirpRouter.post("/", zValidator("json", chirpSchema), async (c) => {
   const chirpData = c.req.valid("json");
-  return c.json({ message: "Chirp created successfully" });
+  const db = c.get("db");
+  const insertedChirps = await db
+    .insert(chirps)
+    .values({
+      body: chirpData.body,
+      authorId: chirpData.authorId,
+    })
+    .returning();
+
+  if (!insertedChirps.length) {
+    return c.json({ message: "Failed to create chirp" }, 500);
+  }
+
+  return c.json(insertedChirps[0], 201);
 });
 
 export default chirpRouter;
