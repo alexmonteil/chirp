@@ -8,12 +8,14 @@ const authRouter = new Hono<AuthEnv>();
 
 // ROUTES
 
+// POST /register
 authRouter.post(
   "/register",
   zValidator("json", registerSchema),
   async (c) => {}
 );
 
+// POST /login
 authRouter.post("/login", zValidator("json", loginSchema), async (c) => {});
 
 export default authRouter;
