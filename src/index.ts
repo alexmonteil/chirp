@@ -6,6 +6,7 @@ import { loggerMiddleware } from "./middleware/loggerMiddleware.js";
 import chirpRouter from "./routes/chirpRouter.js";
 import commentRouter from "./routes/commentRouter.js";
 import { dbMiddleware } from "./middleware/dbMiddleware.js";
+import authRouter from "./routes/authRouter.js";
 
 const app = new Hono<Env>();
 
@@ -14,6 +15,7 @@ app.use("*", loggerMiddleware);
 app.use("*", dbMiddleware);
 
 // register routes
+app.route("/auth", authRouter);
 app.route("/chirps", chirpRouter);
 app.route("/comments", commentRouter);
 

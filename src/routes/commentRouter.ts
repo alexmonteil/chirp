@@ -1,10 +1,11 @@
 import { Hono } from "hono";
 import { type Env } from "../types/env.js";
 
-// instantiate router
 const commentRouter = new Hono<Env>();
 
-// defines routes
+// ROUTES
+
+// GET /comments
 commentRouter.get("/", (c) => {
   return c.json([
     { id: 1, body: "I am comment 1", chirpId: 1 },

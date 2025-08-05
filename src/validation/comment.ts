@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-// Zod schema for comment
 export const commentSchema = z.object({
   body: z.string().min(1, { message: "comment cannot be empty" }),
   chirpId: z

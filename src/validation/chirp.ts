@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-// Zod schema for chirp
 export const chirpSchema = z.object({
   body: z.string().min(1, { message: "chirp cannot be empty" }),
   authorId: z
