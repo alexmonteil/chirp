@@ -1,16 +1,16 @@
-import { Hono } from "hono";
-import { type Env } from "../types/env.js";
 import { zValidator } from "@hono/zod-validator";
-import { sign } from "hono/jwt";
-import { registerSchema } from "../validation/register.js";
-import { loginSchema } from "../validation/login.js";
 import bcrypt from "bcrypt";
-import { credentials, users } from "../db/schema.js";
-import { eq } from "drizzle-orm";
-import { verifyTokenSchema } from "../validation/verifyToken.js";
 import crypto from "crypto";
+import { eq } from "drizzle-orm";
+import { Hono } from "hono";
+import { sign } from "hono/jwt";
+import { credentials, users } from "../db/schema.js";
+import JWT_SECRET from "../dependencies/jwtDependency.js";
 import { jwtMiddleware } from "../middleware/jwtMiddleware.js";
-import JWT_SECRET from "../dependencies/dependencies.js";
+import { type Env } from "../types/env.js";
+import { loginSchema } from "../validation/login.js";
+import { registerSchema } from "../validation/register.js";
+import { verifyTokenSchema } from "../validation/verifyToken.js";
 
 const authRouter = new Hono<Env>();
 

@@ -9,11 +9,13 @@
   "dependencies": {
     "@hono/node-server": "^1.18.1",
     "@hono/zod-validator": "^0.7.2",
+    "@types/nodemailer": "^6.4.17",
     "bcrypt": "^6.0.0",
     "dotenv": "^17.2.1",
     "drizzle-kit": "^0.31.4",
     "drizzle-orm": "^0.44.4",
     "hono": "^4.8.12",
+    "nodemailer": "^7.0.5",
     "pg": "^8.16.3",
     "pino": "^9.7.0",
     "postgres": "^3.4.7",
