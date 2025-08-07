@@ -39,7 +39,7 @@ authRouter.post("/register", zValidator("json", registerSchema), async (c) => {
   const verifyToken = crypto.randomBytes(32).toString("hex");
   const verifyTokenExpiration = new Date(Date.now() + 3600000); // Expires in 1 hour
 
-  const result = await db.transaction(async (tx) => {
+  await db.transaction(async (tx) => {
     // create the user record
     const newUser = await tx
       .insert(users)
