@@ -23,6 +23,7 @@ authRouter.use("/me", jwtMiddleware);
 authRouter.post("/register", zValidator("json", registerSchema), async (c) => {
   const { username, email, password } = c.req.valid("json");
   const db = c.get("db");
+  const logger = c.get("logger");
   const HASH_SALT_ROUNDS = c.get("HASH_SALT_ROUNDS");
 
   // hash the password
@@ -50,9 +51,19 @@ authRouter.post("/register", zValidator("json", registerSchema), async (c) => {
 
   const verificationLink = `http://localhost:3000/auth/verify?token=${verifyToken}`;
 
-  // For now just log the link to test
-  // Later we will email with a service like nodemailer
-  console.log(`Verification Link: ${verificationLink}`);
+  try {
+    const nodemailer = c.get("nodemailer");
+    const message = await nodemailer.sendMail({
+      from: "riemanniandrifter11@gmail.com",
+      to: email,
+      subject: `Welcome ${username} - Chirp account verification`,
+      html: `<span>Click <a href="${verificationLink}">here</a> to verify your account.</span>`,
+    });
+
+    logger.info(`Email sent: ${message.messageId}`);
+  } catch (err) {
+    logger.error(`Error while sending mail ${err}`);
+  }
 
   return c.json(
     {

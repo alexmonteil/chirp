@@ -1,10 +1,10 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
-import { type Env } from "./types/env.js";
+import { dependenciesMiddleware } from "./middleware/dependenciesMiddleware.js";
+import authRouter from "./routes/authRouter.js";
 import chirpRouter from "./routes/chirpRouter.js";
 import commentRouter from "./routes/commentRouter.js";
-import authRouter from "./routes/authRouter.js";
-import { dependenciesMiddleware } from "./middleware/dependenciesMiddleware.js";
+import { type Env } from "./types/env.js";
 
 const app = new Hono<Env>();
 
