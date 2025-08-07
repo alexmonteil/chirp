@@ -1,5 +1,5 @@
 {
-  "id": "f37dd2c7-8337-41f2-972d-ac23e43f23ec",
+  "id": "4270b4d8-0f64-4191-99ae-7f20b6d868b0",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -175,6 +175,18 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
+        },
+        "verify_token": {
+          "name": "verify_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "verify_token_expiration": {
+          "name": "verify_token_expiration",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
@@ -200,6 +212,13 @@
           "nullsNotDistinct": false,
           "columns": [
             "user_id"
+          ]
+        },
+        "credentials_verify_token_unique": {
+          "name": "credentials_verify_token_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "verify_token"
           ]
         }
       },
@@ -235,6 +254,12 @@
           "primaryKey": false,
           "notNull": true,
           "default": false
+        },
+        "avatar_url": {
+          "name": "avatar_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",

@@ -21,7 +21,10 @@ CREATE TABLE "credentials" (
 	"failed_login_attempts" integer DEFAULT 0 NOT NULL,
 	"last_login_at" timestamp,
 	"created_at" timestamp DEFAULT now() NOT NULL,
-	CONSTRAINT "credentials_user_id_unique" UNIQUE("user_id")
+	"verify_token" text,
+	"verify_token_expiration" timestamp,
+	CONSTRAINT "credentials_user_id_unique" UNIQUE("user_id"),
+	CONSTRAINT "credentials_verify_token_unique" UNIQUE("verify_token")
 );
 --> statement-breakpoint
 CREATE TABLE "users" (
@@ -29,6 +32,7 @@ CREATE TABLE "users" (
 	"username" text NOT NULL,
 	"email" text NOT NULL,
 	"is_email_verified" boolean DEFAULT false NOT NULL,
+	"avatar_url" text,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	CONSTRAINT "users_username_unique" UNIQUE("username"),
 	CONSTRAINT "users_email_unique" UNIQUE("email")
