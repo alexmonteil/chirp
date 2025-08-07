@@ -113,8 +113,15 @@ authRouter.post("/login", zValidator("json", loginSchema), async (c) => {
     exp: Math.floor(Date.now() + 3600000), // Expires in 1 hour
   };
 
-  const token = await sign(jwtPayload, JWT_SECRET);
-  return c.json({ token });
+  const jwt = await sign(jwtPayload, JWT_SECRET);
+  return c.json({
+    user: {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+    },
+    token: jwt,
+  });
 });
 
 // GET /verify
@@ -160,7 +167,21 @@ authRouter.get("/verify", zValidator("query", verifyTokenSchema), async (c) => {
     return c.json({ message: "Failed to verify account." }, 500);
   }
 
-  return c.json(updatedUser, 200);
+  const jwtPayload = {
+    sub: updatedUser.id,
+    email: updatedUser.email,
+    exp: Math.floor(Date.now() + 3600000), // Expires in 1 hour
+  };
+
+  const jwt = await sign(jwtPayload, JWT_SECRET);
+
+  return c.json(
+    {
+      user: updatedUser,
+      token: jwt,
+    },
+    200
+  );
 });
 
 export default authRouter;
