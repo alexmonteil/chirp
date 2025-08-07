@@ -29,6 +29,8 @@ export const credentials = pgTable("credentials", {
   failedLoginAttempts: integer("failed_login_attempts").default(0).notNull(),
   lastLoginAt: timestamp("last_login_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  verifyToken: text("verify_token").unique(),
+  verifyTokenExpiration: timestamp("verify_token_expiration"),
 });
 
 // define the chirps table

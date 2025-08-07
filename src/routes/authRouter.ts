@@ -9,6 +9,8 @@ import { saltRoundsSchema } from "../validation/saltRounds.js";
 import { safeParse } from "../utils/utils.js";
 import { credentials, users } from "../db/schema.js";
 import { eq } from "drizzle-orm";
+import { verifyTokenSchema } from "../validation/verifyToken.js";
+import { timestamptz } from "drizzle-orm/gel-core";
 
 const authRouter = new Hono<AuthEnv>();
 
@@ -59,8 +61,9 @@ authRouter.post("/login", zValidator("json", loginSchema), async (c) => {
     },
   });
 
+  // check user exists
   if (!user || !user.credentials) {
-    return c.json({ message: "Invalid email or password" }, 401);
+    return c.json({ message: "Invalid email or password." }, 401);
   }
 
   const isPasswordValid = await bcrypt.compare(
@@ -68,8 +71,20 @@ authRouter.post("/login", zValidator("json", loginSchema), async (c) => {
     user.credentials.passwordHash
   );
 
+  // check password
   if (!isPasswordValid) {
-    return c.json({ message: "Invalid email or password" }, 401);
+    return c.json({ message: "Invalid email or password." }, 401);
+  }
+
+  // check user has verified status
+  if (!user.isEmailVerified) {
+    return c.json(
+      {
+        message:
+          "Account not verified. Please check your email for a verification link.",
+      },
+      403
+    );
   }
 
   const jwtPayload = {
@@ -80,6 +95,52 @@ authRouter.post("/login", zValidator("json", loginSchema), async (c) => {
 
   const token = await sign(jwtPayload, JWT_SECRET);
   return c.json({ token });
+});
+
+// GET /verify
+authRouter.get("/verify", zValidator("query", verifyTokenSchema), async (c) => {
+  const { token } = c.req.valid("query");
+  const now = new Date();
+  const db = c.get("db");
+  const credentialsRecord = await db.query.credentials.findFirst({
+    where: eq(credentials.verifyToken, token),
+    with: {
+      user: true,
+    },
+  });
+
+  if (
+    !credentialsRecord ||
+    !credentialsRecord.verifyTokenExpiration ||
+    now > credentialsRecord.verifyTokenExpiration
+  ) {
+    return c.json(
+      { message: "Invalid, expired, or missing verification token" },
+      400
+    );
+  }
+
+  const updatedUser = await db.transaction(async (tx) => {
+    await tx
+      .update(users)
+      .set({ isEmailVerified: true })
+      .where(eq(users.id, credentialsRecord.userId));
+
+    await tx
+      .update(credentials)
+      .set({ verifyToken: null, verifyTokenExpiration: null })
+      .where(eq(credentials.userId, credentialsRecord.userId));
+
+    return tx.query.users.findFirst({
+      where: eq(users.id, credentialsRecord.userId),
+    });
+  });
+
+  if (!updatedUser) {
+    return c.json({ message: "Failed to verify account." }, 500);
+  }
+
+  return c.json(updatedUser, 200);
 });
 
 export default authRouter;
