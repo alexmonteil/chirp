@@ -1,29 +1,21 @@
 import { Hono } from "hono";
-import type { AuthEnv } from "../types/authEnv.js";
+import { type Env } from "../types/env.js";
 import { zValidator } from "@hono/zod-validator";
 import { sign } from "hono/jwt";
 import { registerSchema } from "../validation/register.js";
 import { loginSchema } from "../validation/login.js";
 import bcrypt from "bcrypt";
-import { saltRoundsSchema } from "../validation/saltRounds.js";
-import { safeParse } from "../utils/utils.js";
 import { credentials, users } from "../db/schema.js";
 import { eq } from "drizzle-orm";
 import { verifyTokenSchema } from "../validation/verifyToken.js";
 import crypto from "crypto";
+import { jwtMiddleware } from "../middleware/jwtMiddleware.js";
+import JWT_SECRET from "../dependencies/dependencies.js";
 
-const authRouter = new Hono<AuthEnv>();
+const authRouter = new Hono<Env>();
 
-const JWT_SECRET = process.env.JWT_SECRET;
-if (!JWT_SECRET) {
-  throw new Error("JWT_SECRET is not defined in environment variables.");
-}
-
-const HASH_SALT_ROUNDS = safeParse<number>(
-  saltRoundsSchema,
-  process.env.HASH_SALT_ROUNDS,
-  10
-);
+// register middleware
+authRouter.use("/me", jwtMiddleware);
 
 // ROUTES
 
@@ -31,6 +23,7 @@ const HASH_SALT_ROUNDS = safeParse<number>(
 authRouter.post("/register", zValidator("json", registerSchema), async (c) => {
   const { username, email, password } = c.req.valid("json");
   const db = c.get("db");
+  const HASH_SALT_ROUNDS = c.get("HASH_SALT_ROUNDS");
 
   // hash the password
   const passwordHash = await bcrypt.hash(password, HASH_SALT_ROUNDS);
@@ -182,6 +175,21 @@ authRouter.get("/verify", zValidator("query", verifyTokenSchema), async (c) => {
     },
     200
   );
+});
+
+// GET /me
+authRouter.get("/me", async (c) => {
+  const jwtPayload = c.get("jwtPayload");
+  const db = c.get("db");
+  const user = await db.query.users.findFirst({
+    where: eq(users.id, jwtPayload.sub as number),
+  });
+
+  if (!user) {
+    return c.json({ message: "User not found." }, 404);
+  }
+
+  return c.json(user);
 });
 
 export default authRouter;

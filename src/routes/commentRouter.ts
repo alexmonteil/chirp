@@ -1,18 +1,15 @@
 import { Hono } from "hono";
 import { type Env } from "../types/env.js";
-import { jwt } from "hono/jwt";
 import { zValidator } from "@hono/zod-validator";
 import { paginationSchema } from "../validation/pagination.js";
 import { eq, gt } from "drizzle-orm";
 import { comments } from "../db/schema.js";
 import { idSchema } from "../validation/id.js";
+import { jwtMiddleware } from "../middleware/jwtMiddleware.js";
 
 const commentRouter = new Hono<Env>();
-const JWT_SECRET = process.env.JWT_SECRET;
-if (!JWT_SECRET) {
-  throw new Error("JWT_SECRET is not defined in environment variables.");
-}
-commentRouter.use(jwt({ secret: JWT_SECRET }));
+
+commentRouter.use(jwtMiddleware);
 
 // ROUTES
 

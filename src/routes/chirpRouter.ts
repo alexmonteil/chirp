@@ -6,16 +6,12 @@ import { chirpSchema } from "../validation/chirp.js";
 import { paginationSchema } from "../validation/pagination.js";
 import { gt, eq } from "drizzle-orm";
 import { chirps } from "../db/schema.js";
-import { jwt } from "hono/jwt";
+import { jwtMiddleware } from "../middleware/jwtMiddleware.js";
 
 const chirpRouter = new Hono<Env>();
-const JWT_SECRET = process.env.JWT_SECRET;
-if (!JWT_SECRET) {
-  throw new Error("JWT_SECRET is not defined in environment variables.");
-}
 
 // register middleware
-chirpRouter.use(jwt({ secret: JWT_SECRET }));
+chirpRouter.use(jwtMiddleware);
 
 // ROUTES
 
@@ -82,7 +78,7 @@ chirpRouter.post("/", zValidator("json", chirpSchema), async (c) => {
 // DELETE /chirps/:id
 chirpRouter.delete("/:id", zValidator("param", idSchema), async (c) => {
   const { id } = c.req.valid("param");
-  const userIdFromJwt = c.get("jwtPayload").sub;
+  const userIdFromJwt = c.get("jwtPayload").sub as number;
   const db = c.get("db");
 
   const chirpToDelete = await db.query.chirps.findFirst({
