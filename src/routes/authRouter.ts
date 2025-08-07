@@ -10,7 +10,7 @@ import { safeParse } from "../utils/utils.js";
 import { credentials, users } from "../db/schema.js";
 import { eq } from "drizzle-orm";
 import { verifyTokenSchema } from "../validation/verifyToken.js";
-import { timestamptz } from "drizzle-orm/gel-core";
+import crypto from "crypto";
 
 const authRouter = new Hono<AuthEnv>();
 
@@ -30,8 +30,14 @@ const HASH_SALT_ROUNDS = safeParse<number>(
 // POST /register
 authRouter.post("/register", zValidator("json", registerSchema), async (c) => {
   const { username, email, password } = c.req.valid("json");
-  const passwordHash = await bcrypt.hash(password, HASH_SALT_ROUNDS);
   const db = c.get("db");
+
+  // hash the password
+  const passwordHash = await bcrypt.hash(password, HASH_SALT_ROUNDS);
+
+  // generate a verification token
+  const verifyToken = crypto.randomBytes(32).toString("hex");
+  const verifyTokenExpiration = new Date(Date.now() + 3600000); // Expires in 1 hour
 
   const result = await db.transaction(async (tx) => {
     // create the user record
@@ -41,13 +47,27 @@ authRouter.post("/register", zValidator("json", registerSchema), async (c) => {
       .returning();
 
     // create the credentials record
-    await tx
-      .insert(credentials)
-      .values({ userId: newUser[0].id, passwordHash });
-    return newUser[0];
+    await tx.insert(credentials).values({
+      userId: newUser[0].id,
+      passwordHash,
+      verifyToken,
+      verifyTokenExpiration,
+    });
   });
 
-  return c.json(result, 201);
+  const verificationLink = `http://localhost:3000/auth/verify?token=${verifyToken}`;
+
+  // For now just log the link to test
+  // Later we will email with a service like nodemailer
+  console.log(`Verification Link: ${verificationLink}`);
+
+  return c.json(
+    {
+      message:
+        "Successful registration. Please check your email for a verification link.",
+    },
+    201
+  );
 });
 
 // POST /login
@@ -90,7 +110,7 @@ authRouter.post("/login", zValidator("json", loginSchema), async (c) => {
   const jwtPayload = {
     sub: user.id,
     email: user.email,
-    exp: Math.floor(Date.now() / 1000) + 60 * 60,
+    exp: Math.floor(Date.now() + 3600000), // Expires in 1 hour
   };
 
   const token = await sign(jwtPayload, JWT_SECRET);
