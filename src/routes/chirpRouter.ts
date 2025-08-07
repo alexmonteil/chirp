@@ -30,7 +30,7 @@ chirpRouter.get("/", zValidator("query", paginationSchema), async (c) => {
     .where(whereCondition)
     .limit(limit)
     .orderBy(chirps.id)
-    .prepare("all_chirps_paginated");
+    .prepare("chirps_paginated");
 
   const result = await query.execute();
   const nextCursor = result.length > 0 ? result[result.length - 1].id : null;
@@ -54,7 +54,7 @@ chirpRouter.get("/:id", zValidator("param", idSchema), async (c) => {
   });
 
   if (!chirp) {
-    return c.json({ message: "Chirp not found" }, 404);
+    return c.json({ message: "Chirp not found." }, 404);
   }
 
   return c.json(chirp);
@@ -73,7 +73,7 @@ chirpRouter.post("/", zValidator("json", chirpSchema), async (c) => {
     .returning();
 
   if (!insertedChirps.length) {
-    return c.json({ message: "Failed to create chirp" }, 500);
+    return c.json({ message: "Failed to create chirp." }, 500);
   }
 
   return c.json(insertedChirps[0], 201);
