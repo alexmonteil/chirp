@@ -1,6 +1,7 @@
 import z from "zod";
 
 export const updateCommentSchema = z.object({
+  id: z.coerce.number().int().positive(),
   body: z
     .string()
     .min(1, { message: "Comment cannot be empty." })

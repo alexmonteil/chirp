@@ -64,7 +64,31 @@ commentRouter.post("/", zValidator("json", commentSchema), async (c) => {});
 commentRouter.patch(
   "/:id",
   zValidator("param", updateCommentSchema),
-  async (c) => {}
+  async (c) => {
+    const { id, body } = c.req.valid("param");
+    const db = c.get("db");
+    const commentToPatch = await db.query.comments.findFirst({
+      where: eq(comments.id, id),
+    });
+
+    if (!commentToPatch) {
+      c.json({ message: "Comment not found." }, 404);
+    }
+
+    const authenticatedId = c.get("jwtPayload").sub as number;
+
+    if (commentToPatch?.authorId !== authenticatedId) {
+      c.json({ message: "Unauthorized Action." }, 403);
+    }
+
+    const patchedComment = await db
+      .update(comments)
+      .set({ body })
+      .where(eq(comments.id, id))
+      .returning();
+
+    c.json(patchedComment);
+  }
 );
 
 // DELETE /comments/:id
