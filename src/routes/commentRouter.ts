@@ -1,14 +1,17 @@
-import { Hono } from "hono";
-import { type Env } from "../types/env.js";
 import { zValidator } from "@hono/zod-validator";
-import { paginationSchema } from "../validation/pagination.js";
 import { eq, gt } from "drizzle-orm";
+import { Hono } from "hono";
 import { comments } from "../db/schema.js";
-import { idSchema } from "../validation/id.js";
 import { jwtMiddleware } from "../middleware/jwtMiddleware.js";
+import { type Env } from "../types/env.js";
+import { commentSchema } from "../validation/comment.js";
+import { idSchema } from "../validation/id.js";
+import { paginationSchema } from "../validation/pagination.js";
+import { updateCommentSchema } from "../validation/updateComment.js";
 
 const commentRouter = new Hono<Env>();
 
+// register middleware
 commentRouter.use(jwtMiddleware);
 
 // ROUTES
@@ -53,5 +56,18 @@ commentRouter.get("/:id", zValidator("param", idSchema), async (c) => {
 
   return c.json(comment);
 });
+
+// POST /comments
+commentRouter.post("/", zValidator("json", commentSchema), async (c) => {});
+
+// PATCH /comments/:id
+commentRouter.patch(
+  "/:id",
+  zValidator("param", updateCommentSchema),
+  async (c) => {}
+);
+
+// DELETE /comments/:id
+commentRouter.delete("/:id", zValidator("param", idSchema), async (c) => {});
 
 export default commentRouter;
