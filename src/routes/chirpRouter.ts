@@ -6,8 +6,16 @@ import { chirpSchema } from "../validation/chirp.js";
 import { paginationSchema } from "../validation/pagination.js";
 import { gt, eq } from "drizzle-orm";
 import { chirps } from "../db/schema.js";
+import { jwt } from "hono/jwt";
 
 const chirpRouter = new Hono<Env>();
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error("JWT_SECRET is not defined in environment variables.");
+}
+
+// register middleware
+chirpRouter.use(jwt({ secret: JWT_SECRET }));
 
 // ROUTES
 
@@ -69,6 +77,28 @@ chirpRouter.post("/", zValidator("json", chirpSchema), async (c) => {
   }
 
   return c.json(insertedChirps[0], 201);
+});
+
+// DELETE /chirps/:id
+chirpRouter.delete("/:id", zValidator("param", idSchema), async (c) => {
+  const { id } = c.req.valid("param");
+  const userIdFromJwt = c.get("jwtPayload").sub;
+  const db = c.get("db");
+
+  const chirpToDelete = await db.query.chirps.findFirst({
+    where: eq(chirps.id, id),
+  });
+
+  if (!chirpToDelete) {
+    c.json({ message: "Chirp not found." }, 404);
+  }
+
+  if (chirpToDelete?.authorId !== userIdFromJwt) {
+    c.json({ message: "Unauthorized Action." }, 403);
+  }
+
+  await db.delete(chirps).where(eq(chirps.id, id));
+  return c.body(null, 204);
 });
 
 export default chirpRouter;
