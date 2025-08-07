@@ -92,6 +92,24 @@ commentRouter.patch(
 );
 
 // DELETE /comments/:id
-commentRouter.delete("/:id", zValidator("param", idSchema), async (c) => {});
+commentRouter.delete("/:id", zValidator("param", idSchema), async (c) => {
+  const { id } = c.req.valid("param");
+  const db = c.get("db");
+  const commentToDelete = await db.query.comments.findFirst({
+    where: eq(comments.id, id),
+  });
+
+  if (!commentToDelete) {
+    return c.json({ message: "Comment not found." }, 404);
+  }
+
+  const authenticatedId = c.get("jwtPayload").sub as number;
+  if (authenticatedId !== commentToDelete.authorId) {
+    return c.json({ message: "Unauthorized Action." }, 403);
+  }
+
+  await db.delete(comments).where(eq(comments.id, id));
+  c.body(null, 204);
+});
 
 export default commentRouter;
