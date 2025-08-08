@@ -10,6 +10,7 @@ import { jwtMiddleware } from "../middleware/jwtMiddleware.js";
 import { type Env } from "../types/env.js";
 import { loginSchema } from "../validation/login.js";
 import { registerSchema } from "../validation/register.js";
+import { resendVerificationSchema } from "../validation/resendVerification.js";
 import { verifyTokenSchema } from "../validation/verifyToken.js";
 
 const authRouter = new Hono<Env>();
@@ -187,6 +188,68 @@ authRouter.get("/verify", zValidator("query", verifyTokenSchema), async (c) => {
     200
   );
 });
+
+// POST /resend-verification
+
+authRouter.post(
+  "/resend-verification",
+  zValidator("json", resendVerificationSchema),
+  async (c) => {
+    const { email } = c.req.valid("json");
+    const db = c.get("db");
+    const logger = c.get("logger");
+    const user = await db.query.users.findFirst({
+      where: eq(users.email, email),
+    });
+
+    if (!user || user.isEmailVerified) {
+      return c.json(
+        {
+          message:
+            "If an account exists, a new verification link has been sent.",
+        },
+        200
+      );
+    }
+
+    // generate a verification token
+    const verifyToken = crypto.randomBytes(32).toString("hex");
+    const verifyTokenExpiration = new Date(Date.now() + 3600000); // Expires in 1 hour
+
+    await db.transaction(async (tx) => {
+      await tx
+        .update(credentials)
+        .set({
+          verifyToken,
+          verifyTokenExpiration,
+        })
+        .where(eq(credentials.userId, user.id));
+    });
+
+    const verificationLink = `http://localhost:3000/auth/verify?token=${verifyToken}`;
+
+    try {
+      const nodemailer = c.get("nodemailer");
+      const message = await nodemailer.sendMail({
+        from: "riemanniandrifter11@gmail.com",
+        to: user.email,
+        subject: `Welcome ${user.username} - Chirp account verification`,
+        html: `<span>Click <a href="${verificationLink}">here</a> to verify your account.</span>`,
+      });
+
+      logger.info(`Email sent: ${message.messageId}`);
+    } catch (err) {
+      logger.error(`Error while sending mail ${err}`);
+    }
+
+    return c.json(
+      {
+        message: "If an account exists, a new verification link has been sent.",
+      },
+      200
+    );
+  }
+);
 
 // GET /me
 authRouter.get("/me", async (c) => {
