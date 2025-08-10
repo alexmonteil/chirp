@@ -6,7 +6,7 @@ import { Hono } from "hono";
 import { sign } from "hono/jwt";
 import { credentials, users } from "../db/schema.js";
 import JWT_SECRET from "../dependencies/jwtDependency.js";
-import { jwtMiddleware } from "../middleware/jwtMiddleware.js";
+import { authMiddleware } from "../middleware/authMiddleware.js";
 import { type Env } from "../types/env.js";
 import { loginSchema } from "../validation/login.js";
 import { registerSchema } from "../validation/register.js";
@@ -16,7 +16,7 @@ import { verifyTokenSchema } from "../validation/verifyToken.js";
 const authRouter = new Hono<Env>();
 
 // register middleware
-authRouter.use("/me", jwtMiddleware);
+authRouter.use("/me", authMiddleware);
 
 // ROUTES
 

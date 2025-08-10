@@ -2,7 +2,7 @@ import { zValidator } from "@hono/zod-validator";
 import { eq, gt } from "drizzle-orm";
 import { Hono } from "hono";
 import { chirps } from "../db/schema.js";
-import { jwtMiddleware } from "../middleware/jwtMiddleware.js";
+import { authMiddleware } from "../middleware/authMiddleware.js";
 import { type Env } from "../types/env.js";
 import { chirpSchema } from "../validation/chirp.js";
 import { idSchema } from "../validation/id.js";
@@ -11,7 +11,7 @@ import { paginationSchema } from "../validation/pagination.js";
 const chirpRouter = new Hono<Env>();
 
 // register middleware
-chirpRouter.use(jwtMiddleware);
+chirpRouter.use(authMiddleware);
 
 // ROUTES
 

@@ -2,14 +2,14 @@ import { zValidator } from "@hono/zod-validator";
 import { and, eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { follows, users } from "../db/schema.js";
-import { jwtMiddleware } from "../middleware/jwtMiddleware.js";
 import type { Env } from "../types/env.js";
 import { followSchema as followeeIdSchema } from "../validation/followeeId.js";
+import { authMiddleware } from "../middleware/authMiddleware.js";
 
 const followRouter = new Hono<Env>();
 
 // register middleware
-followRouter.use(jwtMiddleware);
+followRouter.use(authMiddleware);
 
 // ROUTES
 

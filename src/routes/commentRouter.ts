@@ -2,17 +2,17 @@ import { zValidator } from "@hono/zod-validator";
 import { eq, gt } from "drizzle-orm";
 import { Hono } from "hono";
 import { comments } from "../db/schema.js";
-import { jwtMiddleware } from "../middleware/jwtMiddleware.js";
+import { authMiddleware } from "../middleware/authMiddleware.js";
 import { type Env } from "../types/env.js";
 import { commentSchema } from "../validation/comment.js";
+import { updateCommentSchema } from "../validation/commentUpdate.js";
 import { idSchema } from "../validation/id.js";
 import { paginationSchema } from "../validation/pagination.js";
-import { updateCommentSchema } from "../validation/commentUpdate.js";
 
 const commentRouter = new Hono<Env>();
 
 // register middleware
-commentRouter.use(jwtMiddleware);
+commentRouter.use(authMiddleware);
 
 // ROUTES
 
