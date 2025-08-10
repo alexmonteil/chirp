@@ -4,8 +4,8 @@ import { dependenciesMiddleware } from "./middleware/dependenciesMiddleware.js";
 import authRouter from "./routes/authRouter.js";
 import chirpRouter from "./routes/chirpRouter.js";
 import commentRouter from "./routes/commentRouter.js";
-import { type Env } from "./types/env.js";
 import followRouter from "./routes/followRouter.js";
+import { type Env } from "./types/env.js";
 
 const app = new Hono<Env>();
 
@@ -37,9 +37,9 @@ process.on("SIGINT", () => {
 
 // handle process interrupt
 process.on("SIGTERM", () => {
-  server.close((err) => {
-    if (err) {
-      console.error(err);
+  server.close((error) => {
+    if (error) {
+      console.error(error);
       process.exit(1);
     }
   });
