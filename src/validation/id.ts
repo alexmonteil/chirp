@@ -1,4 +1,4 @@
-import { z } from "zod";
+import z from "zod";
 
 // Zod schema for path parameter: id
 export const idSchema = z.object({

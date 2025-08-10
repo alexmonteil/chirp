@@ -7,7 +7,7 @@ import { type Env } from "../types/env.js";
 import { commentSchema } from "../validation/comment.js";
 import { idSchema } from "../validation/id.js";
 import { paginationSchema } from "../validation/pagination.js";
-import { updateCommentSchema } from "../validation/updateComment.js";
+import { updateCommentSchema } from "../validation/commentUpdate.js";
 
 const commentRouter = new Hono<Env>();
 

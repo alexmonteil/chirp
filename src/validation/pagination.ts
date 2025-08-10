@@ -1,4 +1,4 @@
-import { z } from "zod";
+import z from "zod";
 
 // Zod schema for query parameters for pagination
 export const paginationSchema = z.object({
