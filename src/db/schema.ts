@@ -1,18 +1,20 @@
+import { relations } from "drizzle-orm";
 import {
+  boolean,
+  integer,
   pgTable,
+  primaryKey,
   serial,
   text,
   timestamp,
-  integer,
-  boolean,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
 
 // define the users table
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   email: text("email").notNull().unique(),
+  followersCount: integer("followers_count").default(0).notNull(),
   isEmailVerified: boolean("is_email_verified").default(false).notNull(),
   avatarUrl: text("avatar_url"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -57,6 +59,22 @@ export const comments = pgTable("comments", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// define the follows table
+export const follows = pgTable(
+  "follows",
+  {
+    followerId: integer("follower_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    followeeId: integer("followee_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+  },
+  (table) => {
+    return [primaryKey({ columns: [table.followerId, table.followeeId] })];
+  }
+);
+
 // define relations for optimized queries via virtual properties
 export const usersRelations = relations(users, ({ one, many }) => ({
   chirps: many(chirps),
@@ -64,6 +82,25 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   credentials: one(credentials, {
     fields: [users.id],
     references: [credentials.id],
+  }),
+  followers: many(follows, {
+    relationName: "user_followers",
+  }),
+  following: many(follows, {
+    relationName: "user_following",
+  }),
+}));
+
+export const followsRelations = relations(follows, ({ one }) => ({
+  follower: one(users, {
+    fields: [follows.followerId],
+    references: [users.id],
+    relationName: "user_followers",
+  }),
+  followee: one(users, {
+    fields: [follows.followeeId],
+    references: [users.id],
+    relationName: "user_following",
   }),
 }));
 
