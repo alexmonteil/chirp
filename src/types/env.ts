@@ -1,6 +1,7 @@
 import type { JwtVariables } from "hono/jwt";
 import { type Logger } from "pino";
 import { db } from "../db/db.js";
+import type { cloudinaryClient } from "../dependencies/cloudinaryDependency.js";
 import type { transporter } from "../dependencies/nodemailerDependency.js";
 
 export interface Env {
@@ -10,5 +11,6 @@ export interface Env {
     logger: Logger;
     HASH_SALT_ROUNDS: number;
     nodemailer: typeof transporter;
+    cloudinaryClient: typeof cloudinaryClient;
   };
 }

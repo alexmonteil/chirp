@@ -78,7 +78,7 @@ chirpRouter.post("/", zValidator("json", chirpSchema), async (c) => {
 // DELETE /chirps/:id
 chirpRouter.delete("/:id", zValidator("param", idSchema), async (c) => {
   const { id } = c.req.valid("param");
-  const userIdFromJwt = c.get("jwtPayload").sub as number;
+  const authenticatedId = c.get("jwtPayload").sub as number;
   const db = c.get("db");
 
   const chirpToDelete = await db.query.chirps.findFirst({
@@ -89,7 +89,7 @@ chirpRouter.delete("/:id", zValidator("param", idSchema), async (c) => {
     c.json({ message: "Chirp not found." }, 404);
   }
 
-  if (chirpToDelete?.authorId !== userIdFromJwt) {
+  if (chirpToDelete?.authorId !== authenticatedId) {
     c.json({ message: "Unauthorized Action." }, 403);
   }
 
