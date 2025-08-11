@@ -19,11 +19,11 @@ chirpRouter.use(authMiddleware);
 chirpRouter.get("/", zValidator("query", paginationSchema), async (c) => {
   const { cursor, limit } = c.req.valid("query");
   const db = c.get("db");
-  const whereCondition = cursor ? gt(chirps.id, cursor) : undefined;
+  const cursorCondition = cursor ? gt(chirps.id, cursor) : undefined;
   const query = db
     .select()
     .from(chirps)
-    .where(whereCondition)
+    .where(cursorCondition)
     .limit(limit)
     .orderBy(chirps.id)
     .prepare("chirps_paginated");

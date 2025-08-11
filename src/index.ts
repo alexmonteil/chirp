@@ -4,6 +4,7 @@ import { dependenciesMiddleware } from "./middleware/dependenciesMiddleware.js";
 import authRouter from "./routes/authRouter.js";
 import chirpRouter from "./routes/chirpRouter.js";
 import commentRouter from "./routes/commentRouter.js";
+import feedRouter from "./routes/feedRouter.js";
 import followRouter from "./routes/followRouter.js";
 import userRouter from "./routes/userRouter.js";
 import { type Env } from "./types/env.js";
@@ -19,6 +20,7 @@ app.route("/chirps", chirpRouter);
 app.route("/comments", commentRouter);
 app.route("/follows", followRouter);
 app.route("/users", userRouter);
+app.route("/feed", feedRouter);
 
 // run the server
 const server = serve(
