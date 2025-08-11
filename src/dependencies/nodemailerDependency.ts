@@ -1,14 +1,9 @@
 import "dotenv/config";
 import nodemailer from "nodemailer";
+import { getSafeEnvironmentVar } from "../utils/utils.js";
 
-const GOOGLE_ACCOUNT = process.env.GOOGLE_ACCOUNT;
-const GOOGLE_APP_PASSWORD = process.env.GOOGLE_APP_PASSWORD;
-
-if (!GOOGLE_ACCOUNT || !GOOGLE_APP_PASSWORD) {
-  throw new Error(
-    "GOOGLE_ACCOUNT or GOOGLE_PASSWORD not set in environment variables."
-  );
-}
+const GOOGLE_ACCOUNT = getSafeEnvironmentVar("GOOGLE_ACCOUNT");
+const GOOGLE_APP_PASSWORD = getSafeEnvironmentVar("GOOGLE_APP_PASSWORD");
 
 export const transporter = nodemailer.createTransport({
   service: "gmail",
