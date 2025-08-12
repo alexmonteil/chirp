@@ -1,22 +1,25 @@
-# dev
+# dev tools and IDE
 .yarn/
 !.yarn/releases
 .vscode/*
 !.vscode/launch.json
 !.vscode/*.code-snippets
-.idea/workspace.xml
-.idea/usage.statistics.xml
-.idea/shelf
+.idea/
 
-# deps
-node_modules/
+# dependencies
+**/node_modules/
+
+# build artifacts
+/server/dist/
+/client/dist/
 
 # env
 .env
 .env.production
+.env.local
 
 # docker
-docker-compose-yml
+docker-compose.override.yml
 
 # logs
 logs/

@@ -11,19 +11,26 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
 
-  app:
-    build: .
-    environment:
-      DATABASE_URL: ${DATABASE_URL}
-    depends_on:
-      - db
+  server:
+    build: ./server
+    volumes:
+      - ./server:/app
     ports:
       - "3000:3000"
+
+  client:
+    build: ./client
     volumes:
-      - .:/app
+      - ./cient:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    command: npm run dev
+    depends_on:
+      - server
 
   migrate:
-    build: .
+    build: ./server
     # The 'migrate' service will run the migrations.
     # It must have the same environment variables as the 'app' service to connect to the DB.
     environment:
