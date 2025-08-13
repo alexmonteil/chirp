@@ -15,8 +15,21 @@ services:
     build: ./server
     volumes:
       - ./server:/app
+      - /app/node_modules
     ports:
       - "3000:3000"
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      HASH_SALT_ROUNDS: ${HASH_SALT_ROUNDS}
+      GOOGLE_ACCOUNT: ${GOOGLE_ACCOUNT}
+      GOOGLE_APP_PASSWORD: ${GOOGLE_APP_PASSWORD}
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
+    command: npm run dev
+    depends_on:
+      - db
 
   client:
     build: ./client
@@ -31,14 +44,11 @@ services:
 
   migrate:
     build: ./server
-    # The 'migrate' service will run the migrations.
-    # It must have the same environment variables as the 'app' service to connect to the DB.
     environment:
       DATABASE_URL: ${DATABASE_URL}
     depends_on:
       - db
-    # We don't need to expose ports for this service
-    # We will run commands manually
-    command: "true" # A no-op command to keep the container from exiting immediately
+    command: "true"
+
 volumes:
   db-data:
