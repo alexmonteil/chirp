@@ -1,9 +1,9 @@
 import { zValidator } from "@hono/zod-validator";
+import { uploadRequestSchema } from "@shared/validation/uploadRequest.js";
 import { Hono } from "hono";
 import { cloudinaryClient } from "../dependencies/cloudinaryDependency.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 import type { Env } from "../types/env.js";
-import { uploadRequestSchema } from "../validation/uploadRequest.js";
 
 const userRouter = new Hono<Env>();
 

@@ -4,10 +4,10 @@ import { Hono } from "hono";
 import { comments } from "../db/schema.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 import { type Env } from "../types/env.js";
-import { commentSchema } from "../validation/comment.js";
-import { updateCommentSchema } from "../validation/commentUpdate.js";
-import { idSchema } from "../validation/id.js";
-import { paginationSchema } from "../validation/pagination.js";
+import { commentSchema } from "@shared/validation/comment.js";
+import { updateCommentSchema } from "@shared/validation/commentUpdate.js";
+import { idSchema } from "@shared/validation/id.js";
+import { paginationSchema } from "@shared/validation/pagination.js";
 
 const commentRouter = new Hono<Env>();
 

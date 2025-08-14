@@ -3,7 +3,7 @@ import { and, eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { follows, users } from "../db/schema.js";
 import type { Env } from "../types/env.js";
-import { followSchema as followeeIdSchema } from "../validation/followeeId.js";
+import { followSchema as followeeIdSchema } from "@shared/validation/followeeId.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 
 const followRouter = new Hono<Env>();

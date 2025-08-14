@@ -1,5 +1,5 @@
 import { safeParse } from "../utils/utils.js";
-import { saltRoundsSchema } from "../validation/saltRounds.js";
+import { saltRoundsSchema } from "@shared/validation/saltRounds.js";
 
 export const HASH_SALT_ROUNDS = safeParse<number>(
   saltRoundsSchema,

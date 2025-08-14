@@ -4,9 +4,9 @@ import { Hono } from "hono";
 import { chirps } from "../db/schema.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 import { type Env } from "../types/env.js";
-import { chirpSchema } from "../validation/chirp.js";
-import { idSchema } from "../validation/id.js";
-import { paginationSchema } from "../validation/pagination.js";
+import { chirpSchema } from "@shared/validation/chirp.js";
+import { idSchema } from "@shared/validation/id.js";
+import { paginationSchema } from "@shared/validation/pagination.js";
 
 const chirpRouter = new Hono<Env>();
 

@@ -1,4 +1,8 @@
 import { zValidator } from "@hono/zod-validator";
+import { registerSchema } from "@shared/validation/register.js";
+import { loginSchema } from "@shared/validation/login.js";
+import { verifyTokenSchema } from "@shared/validation/verifyToken.js"
+import { resendVerificationSchema } from "@shared/validation/resendVerification.js"
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 import { eq } from "drizzle-orm";
@@ -8,10 +12,6 @@ import { credentials, users } from "../db/schema.js";
 import JWT_SECRET from "../dependencies/jwtDependency.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 import { type Env } from "../types/env.js";
-import { loginSchema } from "../validation/login.js";
-import { registerSchema } from "../validation/register.js";
-import { resendVerificationSchema } from "../validation/resendVerification.js";
-import { verifyTokenSchema } from "../validation/verifyToken.js";
 
 const authRouter = new Hono<Env>();
 

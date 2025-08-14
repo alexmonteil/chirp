@@ -4,7 +4,7 @@ import { Hono } from "hono";
 import { chirps, follows } from "../db/schema.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 import type { Env } from "../types/env.js";
-import { paginationSchema } from "../validation/pagination.js";
+import { paginationSchema } from "@shared/validation/pagination.js";
 
 const feedRouter = new Hono<Env>();
 
