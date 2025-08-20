@@ -14,4 +14,4 @@ RUN npm ci
 COPY . .
 
 # Build the shared packages, which is needed by both client and server
-RUN npm run build --workspace=@chirp/packages
+RUN npm run build
