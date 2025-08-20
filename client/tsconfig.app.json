@@ -8,8 +8,8 @@
     "module": "ESNext",
     "skipLibCheck": true,
     "paths": {
-      "@*": ["./src/*"],
-      "@shared/*": ["../packages/dist/*"]
+      "@*": ["src/*"],
+      "@shared/*": ["packages/dist/*"]
     },
 
     /* Bundler mode */

@@ -14,10 +14,13 @@ services:
   server:
     build:
       context: .
-      dockerfile: ./server/Dockerfile
+      dockerfile: server/Dockerfile
     volumes:
       - ./server:/app/server
       - ./packages:/app/packages
+      - /app/node_modules
+      - /app/server/node_modules
+      - /app/packages/node_modules
     ports:
       - "3000:3000"
     environment:
@@ -36,10 +39,13 @@ services:
   client:
     build:
       context: .
-      dockerfile: ./client/Dockerfile
+      dockerfile: client/Dockerfile
     volumes:
       - ./client:/app/client
       - ./packages:/app/packages
+      - /app/node_modules
+      - /app/client/node_modules
+      - /app/packages/node_modules
     ports:
       - "5173:5173"
     command: npm run dev --workspace=client -- --host
@@ -49,13 +55,12 @@ services:
   migrate:
     build:
       context: .
-      dockerfile: ./server/Dockerfile
+      dockerfile: server/Dockerfile
     environment:
       DATABASE_URL: ${DATABASE_URL}
     depends_on:
       - db
-    command: npm run build --workspace=packages
+    command: "true"
 
 volumes:
   db-data:
-  

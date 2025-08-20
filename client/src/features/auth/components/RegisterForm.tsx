@@ -8,7 +8,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { registerSchema } from "@chirp/shared/validation/register.js";
+import { registerSchema } from "@shared/validation/register";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import type z from "zod";
