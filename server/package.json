@@ -20,7 +20,8 @@
     "pg": "^8.16.3",
     "pino": "^9.7.0",
     "postgres": "^3.4.7",
-    "zod": "^4.0.14"
+    "zod": "^4.0.14",
+    "@chirp/shared": "file:../packages"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",

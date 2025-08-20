@@ -11,13 +11,19 @@
   },
   "dependencies": {
     "@chakra-ui/react": "^3.24.2",
+    "@chirp/shared": "file:../packages",
     "@emotion/react": "^11.14.0",
+    "path": "^0.12.7",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "react-hook-form": "^7.62.0"
+    "react-hook-form": "^7.62.0",
+    "zod": "^4.0.17"
   },
   "devDependencies": {
+    "@chirp/packages": "file:../packages",
     "@eslint/js": "^9.33.0",
+    "@hookform/resolvers": "^5.2.1",
+    "@types/node": "^24.2.1",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react": "^5.0.0",

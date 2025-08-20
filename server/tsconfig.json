@@ -6,7 +6,7 @@
     "verbatimModuleSyntax": true,
     "skipLibCheck": true,
     "paths": {
-      "@shared/*": ["../packages/*"]
+      "@shared/*": ["../packages/dist/*"]
     },
     "types": ["node"],
     "jsx": "react-jsx",

@@ -11,8 +11,15 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
 
+  packages:
+    build: ./packages
+
   server:
-    build: ./server
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+      args:
+        - SHARED_BUILDER=packages
     volumes:
       - ./server:/app
       - /app/node_modules
@@ -30,9 +37,14 @@ services:
     command: npm run dev
     depends_on:
       - db
+      - packages
 
   client:
-    build: ./client
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+      args:
+        - SHARED_BUILDER=packages
     volumes:
       - ./client:/app
       - /app/node_modules
@@ -41,6 +53,7 @@ services:
     command: sh -c "npm run dev -- --host"
     depends_on:
       - server
+      - packages
 
   migrate:
     build: ./server
