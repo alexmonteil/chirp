@@ -11,18 +11,13 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
 
-  packages:
-    build: ./packages
-
   server:
     build:
-      context: ./server
-      dockerfile: Dockerfile
-      args:
-        - SHARED_BUILDER=packages
+      context: .
+      dockerfile: ./server/Dockerfile
     volumes:
-      - ./server:/app
-      - /app/node_modules
+      - ./server:/app/server
+      - ./packages:/app/packages
     ports:
       - "3000:3000"
     environment:
@@ -34,34 +29,33 @@ services:
       CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
       CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
       CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
-    command: npm run dev
+    command: npm run dev --workspace=server
     depends_on:
       - db
-      - packages
 
   client:
     build:
-      context: ./client
-      dockerfile: Dockerfile
-      args:
-        - SHARED_BUILDER=packages
+      context: .
+      dockerfile: ./client/Dockerfile
     volumes:
-      - ./client:/app
-      - /app/node_modules
+      - ./client:/app/client
+      - ./packages:/app/packages
     ports:
       - "5173:5173"
-    command: sh -c "npm run dev -- --host"
+    command: npm run dev --workspace=client -- --host
     depends_on:
       - server
-      - packages
 
   migrate:
-    build: ./server
+    build:
+      context: .
+      dockerfile: ./server/Dockerfile
     environment:
       DATABASE_URL: ${DATABASE_URL}
     depends_on:
       - db
-    command: "true"
+    command: npm run build --workspace=packages
 
 volumes:
   db-data:
+  

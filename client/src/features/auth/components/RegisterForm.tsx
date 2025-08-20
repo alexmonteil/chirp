@@ -8,8 +8,8 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
+import { registerSchema } from "@chirp/shared/validation/register.js";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { registerSchema } from "@chirp/shared";
 import { useForm } from "react-hook-form";
 import type z from "zod";
 

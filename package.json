@@ -4,14 +4,20 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "server:dev": "npm run dev --prefix ./server",
-    "client:dev": "npm run dev --prefix ./client"
+    "server:dev": "npm run dev --workspace=server",
+    "client:dev": "npm run dev --workspace=client",
+    "start": "npm run start --workspace=server"
   },
+  "workspaces": [
+    "server",
+    "client",
+    "packages"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/alexmonteil/chirp.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Alex Monteil",
   "license": "ISC"
 }
